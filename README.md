@@ -3,7 +3,7 @@ Django-celery-docker
 
 # Порядок запуска:
 
-- docker-compose up -d --build db
+- docker-compose up -d --build db (ожидаем полной загрузки Postgres)
 - docker-compose up -d --build redis
 - docker-compose up -d --build web
 - docker-compose up -d --build celery
