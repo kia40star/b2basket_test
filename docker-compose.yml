@@ -1,0 +1,37 @@
+version: '3.7'
+services:
+  db:
+    restart: always
+    image: postgres:latest
+    ports:
+        - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  redis:
+    image: "redis:alpine"
+  web:
+    restart: always
+    build: ./app
+    command: python manage.py runserver 0.0.0.0:9000
+    volumes:
+      - ./app/:/usr/src/app/
+    ports:
+      - 8000:9000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+      - redis
+  celery:
+    build: ./app
+    command: celery worker --app=b2basket --loglevel=info --logfile=logs/celery.log
+    depends_on:
+      - web
+      - db
+      - redis
+    env_file:
+      - ./.env.dev
+volumes:
+  postgres_data:
