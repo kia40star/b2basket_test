@@ -5,6 +5,7 @@ from rest_framework.reverse import reverse
 
 from .models import Data
 from .serializers import KeySerializer, UrlSerializer
+from .tasks import run_task
 
 
 @api_view(['GET'])
@@ -23,6 +24,7 @@ class UrlViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         obj_id = response.data.get('id')
+        run_task.delay(obj_id)
         response.data = dict(id=obj_id)
         return response
 
